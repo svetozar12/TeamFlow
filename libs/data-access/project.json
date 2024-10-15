@@ -1,0 +1,15 @@
+{
+  "name": "data-access",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/data-access/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "gql-generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx graphql-codegen --config libs/data-access/codegen.yml"
+      }
+    }
+  }
+}
