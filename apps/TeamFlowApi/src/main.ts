@@ -5,6 +5,7 @@
 
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {

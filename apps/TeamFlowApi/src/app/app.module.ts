@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { SetResolver } from './set/set.resolver';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { PrismaService } from './prisma/prisma.service';
 
 @Module({
   imports: [
@@ -19,6 +20,6 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
   ],
-  providers: [SetResolver],
+  providers: [SetResolver, PrismaService],
 })
 export class AppModule {}

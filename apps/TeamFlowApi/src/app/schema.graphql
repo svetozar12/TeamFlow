@@ -10,5 +10,5 @@ type Query {
 }
 
 type Mutation {
-  addSet(name: String, year: String, numParts: Int): Set!
+  addSet(name: String, year: Int, numParts: Int): Set!
 }

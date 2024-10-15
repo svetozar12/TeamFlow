@@ -12,7 +12,7 @@ export interface SetFormProps {}
 
 export const SetForm = (props: SetFormProps) => {
   const [name, setName] = useState('');
-  const [year, setYear] = useState('');
+  const [year, setYear] = useState(0);
   const [numParts, setNumParts] = useState(1000);
 
   const [addSetMutation, _] = useAddSetMutation({
@@ -34,7 +34,7 @@ export const SetForm = (props: SetFormProps) => {
     event.preventDefault();
     addSetMutation();
     setName('');
-    setYear('');
+    setYear(0);
     setNumParts(1000);
   };
 
@@ -53,8 +53,9 @@ export const SetForm = (props: SetFormProps) => {
         Year:{' '}
         <input
           name="year"
+          type="number"
           value={year}
-          onChange={(event) => setYear(event.target.value)}
+          onChange={(event) => setYear(Number(event.target.value))}
         ></input>
       </label>
       <br />

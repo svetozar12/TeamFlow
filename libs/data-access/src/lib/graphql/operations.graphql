@@ -7,7 +7,7 @@ query setList {
   }
 }
 
-mutation addSet($name: String!, $year: String!, $numParts: Int!) {
+mutation addSet($name: String!, $year: Int!, $numParts: Int!) {
   addSet(name: $name, year: $year, numParts: $numParts) {
     id
     name
