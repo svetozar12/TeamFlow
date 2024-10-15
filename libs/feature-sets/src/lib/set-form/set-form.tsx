@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
-
-import './set-form.css';
 import {
   useAddSetMutation,
   SetListDocument,
   SetListQuery,
 } from '@team-flow/data-access';
+import { TextField, Button, Box } from '@mui/material';
 
-/* eslint-disable-next-line */
-export interface SetFormProps {}
-
-export const SetForm = (props: SetFormProps) => {
+export const SetForm = () => {
   const [name, setName] = useState('');
   const [year, setYear] = useState(0);
   const [numParts, setNumParts] = useState(1000);
 
-  const [addSetMutation, _] = useAddSetMutation({
+  const [addSetMutation] = useAddSetMutation({
     variables: { name, year, numParts },
     update(cache, { data }) {
       if (!data) return;
@@ -39,37 +35,38 @@ export const SetForm = (props: SetFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Name:{' '}
-        <input
-          name="name"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-        ></input>
-      </label>
-      <br />
-      <label>
-        Year:{' '}
-        <input
-          name="year"
-          type="number"
-          value={year}
-          onChange={(event) => setYear(Number(event.target.value))}
-        ></input>
-      </label>
-      <br />
-      <label>
-        Number of Parts:{' '}
-        <input
-          name="numParts"
-          value={numParts}
-          onChange={(event) => setNumParts(+event.target.value)}
-        ></input>
-      </label>
-      <br />
-      <button>Create new set</button>
-    </form>
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 300 }}
+    >
+      <TextField
+        label="Name"
+        variant="outlined"
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+        fullWidth
+      />
+      <TextField
+        label="Year"
+        type="number"
+        variant="outlined"
+        value={year}
+        onChange={(event) => setYear(Number(event.target.value))}
+        fullWidth
+      />
+      <TextField
+        label="Number of Parts"
+        type="number"
+        variant="outlined"
+        value={numParts}
+        onChange={(event) => setNumParts(Number(event.target.value))}
+        fullWidth
+      />
+      <Button type="submit" variant="contained" color="primary">
+        Create new set
+      </Button>
+    </Box>
   );
 };
 

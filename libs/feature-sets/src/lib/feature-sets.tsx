@@ -1,23 +1,31 @@
 import React from 'react';
-
 import { useSetListQuery } from '@team-flow/data-access';
-/* eslint-disable-next-line */
-export interface SetListProps {}
+import {
+  CircularProgress,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+} from '@mui/material';
 
-export const SetList = (props: SetListProps) => {
+export const SetList = () => {
   const { loading, error, data } = useSetListQuery();
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
+  if (loading) return <CircularProgress />;
+  if (error) return <Typography color="error">Error :(</Typography>;
   if (!data || !data.allSets) return null;
+
   return (
-    <ul>
+    <List>
       {data.allSets.map(({ id, name, numParts, year }) => (
-        <li key={id}>
-          {year} - <strong>{name}</strong> ({numParts} parts)
-        </li>
+        <ListItem key={id}>
+          <ListItemText
+            primary={`${year} - ${name}`}
+            secondary={`${numParts} parts`}
+          />
+        </ListItem>
       ))}
-    </ul>
+    </List>
   );
 };
 

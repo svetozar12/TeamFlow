@@ -6,8 +6,13 @@
   "private": true,
   "dependencies": {
     "@apollo/server": "^4.11.0",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@fontsource/roboto": "^5.1.0",
     "@mercuriusjs/federation": "^4.0.0",
     "@mercuriusjs/gateway": "^4.0.1",
+    "@mui/icons-material": "^6.1.4",
+    "@mui/material": "^6.1.4",
     "@nestjs/apollo": "^12.2.0",
     "@nestjs/common": "^10.0.2",
     "@nestjs/core": "^10.0.2",

@@ -1,8 +1,10 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import styles from './app.module.css';
-
 import { SetList, SetForm } from '@team-flow/feature-sets';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+
 export function App() {
   const cache = new InMemoryCache();
   const client = new ApolloClient({
