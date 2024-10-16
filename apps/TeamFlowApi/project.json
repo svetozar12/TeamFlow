@@ -1,0 +1,26 @@
+{
+  "name": "TeamFlowApi",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/TeamFlowApi/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "TeamFlowApi:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "TeamFlowApi:build:development"
+        },
+        "production": {
+          "buildTarget": "TeamFlowApi:build:production"
+        }
+      }
+    }
+  }
+}
