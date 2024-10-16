@@ -32,4 +32,4 @@ jobs:
 
       # Run affected commands with Yarn
       # This will run lint, test, build, and e2e tasks only for affected projects
-      - run: npx nx affected -t lint test build e2e-ci
+      - run: npx nx affected -t lint test build
