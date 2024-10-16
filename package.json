@@ -2,7 +2,15 @@
   "name": "@team-flow/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build-all": "yarn nx run-many --target=build --all",
+    "serve-all": "yarn nx run-many --target=serve --all",
+    "test-all": "yarn nx run-many --target=test --all",
+    "e2e-all": "yarn nx run-many --target=e2e --all",
+    "docker-build-all": "yarn nx run-many --target=docker-build --all",
+    "docker-build-local-all": "yarn nx run-many --target=docker-build-local --all",
+    "deploy": "yarn nx run-many --target=deploy --all"
+  },
   "private": true,
   "dependencies": {
     "@apollo/server": "^4.11.0",
@@ -24,6 +32,7 @@
     "graphql-tools": "^9.0.2",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "react-router-dom": "^6.27.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0"
   },
