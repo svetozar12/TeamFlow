@@ -1,9 +1,8 @@
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { SetResolver } from './set/set.resolver';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
-import { PrismaService } from './prisma/prisma.service';
+import { SetModule } from './set/set.module';
 
 @Module({
   imports: [
@@ -11,6 +10,20 @@ import { PrismaService } from './prisma/prisma.service';
       driver: ApolloDriver,
       typePaths: ['./**/*.graphql'],
       playground: false,
+      formatError: (error) => {
+        const originalError = error.extensions?.originalError as any;
+
+        if (!originalError) {
+          return {
+            message: error.message,
+            code: error.extensions?.code,
+          };
+        }
+        return {
+          message: originalError?.message,
+          code: error.extensions?.code,
+        };
+      },
       definitions: {
         path: 'apps/TeamFlowApi/src/graphql.ts',
         outputAs: 'class',
@@ -19,7 +32,7 @@ import { PrismaService } from './prisma/prisma.service';
       },
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
+    SetModule,
   ],
-  providers: [SetResolver, PrismaService],
 })
 export class AppModule {}
