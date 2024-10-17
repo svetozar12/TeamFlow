@@ -17,7 +17,7 @@
     "paths": {
       "@team-flow/data-access": ["libs/data-access/src/index.ts"],
       "@team-flow/feature-sets": ["libs/feature-sets/src/index.ts"],
-
+      "@apps/*":["apps/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -1,14 +1,27 @@
 type Set {
-  id: Int!
-  name: String!
-  year: Int!
-  numParts: Int!
+  id: Int
+  name: String
+  year: Int
+  numParts: Int
 }
 
+
+type InternalServerError {
+  message: String!
+  status: Int
+}
+
+type SetList {
+  data: [Set]
+}
+
+union SetListResponse = SetList | InternalServerError
+union SetResponse = Set | InternalServerError
+
 type Query {
-  allSets: [Set!]
+  sets: SetListResponse
 }
 
 type Mutation {
-  addSet(name: String, year: Int, numParts: Int): Set!
+  addSet(name: String, year: Int, numParts: Int): SetResponse!
 }

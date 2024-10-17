@@ -1,34 +1,22 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { Set } from '../../graphql';
-import { PrismaService } from '../prisma/prisma.service';
+import { Set, SetList } from '../../graphql';
+import { SetService } from './set.service';
 
 @Resolver('Set')
 export class SetResolver {
-  constructor(private prisma: PrismaService) {}
+  constructor(private setService: SetService) {}
 
-  @Query('allSets')
-  async getAllSets(): Promise<Set[]> {
-    try {
-      return this.prisma.set.findMany();
-    } catch (err) {
-      console.error(err);
-      return [];
-    }
+  @Query('sets')
+  async sets(): Promise<SetList> {
+    return this.setService.findAll();
   }
-
   @Mutation()
   async addSet(
     @Args('name') name: string,
     @Args('year') year: number,
     @Args('numParts') numParts: number
-  ) {
-    const newSet = {
-      name,
-      year,
-      numParts: +numParts,
-    };
-
-    return this.prisma.set.create({ data: newSet });
+  ): Promise<Set> {
+    return this.setService.create({ name, year, numParts });
   }
 }
