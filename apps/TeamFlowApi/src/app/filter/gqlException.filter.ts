@@ -4,7 +4,7 @@ import { InternalServerError } from '../../graphql';
 
 @Catch()
 export class GraphqlExceptionFilter implements GqlExceptionFilter {
-  catch(exception: any): InternalServerError {
+  catch(exception: { message: string; status?: number }): InternalServerError {
     console.error('Error:', exception);
     return {
       __typename: 'InternalServerError',

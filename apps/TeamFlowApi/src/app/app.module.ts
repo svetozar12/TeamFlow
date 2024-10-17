@@ -11,7 +11,9 @@ import { SetModule } from './set/set.module';
       typePaths: ['./**/*.graphql'],
       playground: false,
       formatError: (error) => {
-        const originalError = error.extensions?.originalError as any;
+        const originalError = error.extensions?.originalError as {
+          message: string;
+        };
 
         if (!originalError) {
           return {
