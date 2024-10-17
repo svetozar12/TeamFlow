@@ -17,6 +17,13 @@ type SetList {
 
 union SetListResponse = SetList | InternalServerError
 union SetResponse = Set | InternalServerError
+union LoginResponse = User | InternalServerError
+
+type User {
+  userId: Int
+  username: String
+  password: String
+}
 
 type Query {
   sets: SetListResponse
@@ -24,4 +31,5 @@ type Query {
 
 type Mutation {
   addSet(name: String, year: Int, numParts: Int): SetResponse!
+  login(username: String!, password: String!): LoginResponse
 }

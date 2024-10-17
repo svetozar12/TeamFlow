@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { SetModule } from './set/set.module';
+import { AuthModule } from '@apps/TeamFlowApi/src/app/auth/auth.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { SetModule } from './set/set.module';
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
     SetModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
