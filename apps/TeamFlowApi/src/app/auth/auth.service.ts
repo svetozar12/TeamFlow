@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import {
-  User,
-  UsersService,
-} from '@apps/TeamFlowApi/src/app/users/users.service';
+import { UsersService } from '@apps/TeamFlowApi/src/app/users/users.service';
+import { JwtService } from '@nestjs/jwt';
+import { JWT, User, Profile } from '@apps/TeamFlowApi/src/graphql';
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService
+  ) {}
 
   async validateUser(
     username: string,
@@ -19,5 +21,23 @@ export class AuthService {
       return result;
     }
     return null;
+  }
+
+  async validateUserById(id: number): Promise<Omit<User, 'password'>> {
+    const user = await this.usersService.findOneById(id);
+
+    return user;
+  }
+
+  login(user: User): JWT {
+    const payload = { username: user.username, sub: user.userId };
+    return {
+      accessToken: this.jwtService.sign(payload),
+      __typename: 'JWT',
+    };
+  }
+
+  getProfile(context): Profile {
+    return { ...context.req.user, __typename: 'Profile' };
   }
 }
