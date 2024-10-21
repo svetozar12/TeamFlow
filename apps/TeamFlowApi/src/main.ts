@@ -11,8 +11,7 @@ import { JWTGqlGuard } from '@apps/TeamFlowApi/src/app/guards/jwt.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const globalPrefix = 'graphql';
-  app.setGlobalPrefix(globalPrefix);
+
   const port = process.env.PORT || 3000;
   app.enableCors();
   const reflector = app.get(Reflector);
@@ -21,9 +20,7 @@ async function bootstrap() {
   // filters
   app.useGlobalFilters(new GraphqlExceptionFilter());
   await app.listen(port);
-  Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
-  );
+  Logger.log(`🚀 Application is running on: http://localhost:${port}`);
 }
 
 bootstrap();

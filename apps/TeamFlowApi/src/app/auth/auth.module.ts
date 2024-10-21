@@ -6,6 +6,8 @@ import { LocalStrategy } from '@apps/TeamFlowApi/src/app/auth/local.strategy';
 import { AuthResolver } from '@apps/TeamFlowApi/src/app/auth/auth.resolver';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from '@apps/TeamFlowApi/src/app/auth/jwt.strategy';
+import { AuthController } from '@apps/TeamFlowApi/src/app/auth/auth.controller';
+import { GoogleStrategy } from '@apps/TeamFlowApi/src/app/auth/google.strategy';
 
 @Module({
   imports: [
@@ -16,7 +18,14 @@ import { JwtStrategy } from '@apps/TeamFlowApi/src/app/auth/jwt.strategy';
       signOptions: { expiresIn: '60s' },
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, AuthResolver],
+  controllers: [AuthController],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    GoogleStrategy,
+    AuthResolver,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Request } from '@nestjs/common';
 import { UsersService } from '@apps/TeamFlowApi/src/app/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { JWT, User, Profile } from '@apps/TeamFlowApi/src/graphql';
@@ -39,5 +39,9 @@ export class AuthService {
 
   getProfile(context): Profile {
     return { ...context.req.user, __typename: 'Profile' };
+  }
+
+  getOauthData(@Request() req) {
+    return req.user;
   }
 }
