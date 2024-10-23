@@ -14,16 +14,24 @@ export class LocalGqlGuard extends AuthGuard('local') {
     if (!request.body) request.body = {};
     const args = ctx.getArgs();
     request.body = { ...request.body, ...args };
+
+    if (request.body.refreshToken) {
+      // Skip the authentication if refreshToken is present
+      return null;
+    }
+
     return request;
   }
 
   canActivate(context: ExecutionContext) {
-    const isPublic = this.reflector.get<boolean>(
-      'isPublic',
-      context.getHandler()
-    );
+    const ctx = GqlExecutionContext.create(context);
+    const request = ctx.getContext().req;
 
-    if (isPublic) {
+    if (!request.body) request.body = {};
+    const args = ctx.getArgs();
+    request.body = { ...request.body, ...args };
+    if (request.body.input.refreshToken.refreshToken) {
+      // Skip the authentication if refreshToken is present
       return true;
     }
 

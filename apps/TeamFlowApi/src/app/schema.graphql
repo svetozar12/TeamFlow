@@ -1,9 +1,3 @@
-type Set {
-  id: Int
-  name: String
-  year: Int
-  numParts: Int
-}
 
 # Represents an error returned by the server
 type InternalServerError {
@@ -11,42 +5,46 @@ type InternalServerError {
   status: Int
 }
 
-# Type used to return a list of sets
-type SetList {
-  data: [Set]
-}
-
 type JWT {
   accessToken: String!
+  refreshToken: String!
 }
 
 # Union to return either a SetList or an InternalServerError
-union SetListResult = SetList | InternalServerError
-
-union SetResult = Set | InternalServerError
-
 union LoginResult = JWT | InternalServerError
 
 union ProfileResponse = Profile | InternalServerError
 
 type User {
   userId: Int
-  username: String
+  email: String
   password: String
 }
 
 type Profile {
   userId: Int
-  username: String
+  email: String
 }
 
 type Query {
-  sets: SetListResult
   profile: ProfileResponse
+}
+
+input LoginInput {
+  credentials: LoginInputLocal
+  refreshToken: LoginInputToken
+}
+
+input LoginInputLocal {
+  email: String!
+  password: String!
+}
+
+input LoginInputToken {
+  refreshToken: String!
 }
 
 # Mutation to add a new set and log in a user
 type Mutation {
-  addSet(name: String, year: Int, numParts: Int): SetResult!
-  login(username: String!, password: String!): LoginResult
+  login(input: LoginInput!): LoginResult
 }

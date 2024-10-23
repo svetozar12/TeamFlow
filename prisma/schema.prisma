@@ -7,10 +7,16 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Set {
+model User {
   id    Int     @default(autoincrement()) @id
-  name String
-  year Int
-  numParts Int
+  email String
+  password String
+  accountType AccountType @default(Local)
+}
+
+enum AccountType {
+  Local
+  Google
+  Github
 }
 

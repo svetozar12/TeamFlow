@@ -2,7 +2,6 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
-import { SetModule } from './set/set.module';
 import { AuthModule } from '@apps/TeamFlowApi/src/app/auth/auth.module';
 
 @Module({
@@ -35,7 +34,6 @@ import { AuthModule } from '@apps/TeamFlowApi/src/app/auth/auth.module';
       },
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
-    SetModule,
     AuthModule,
   ],
 })
