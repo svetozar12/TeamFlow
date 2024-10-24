@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { GoogleOAuthGuard } from '@apps/TeamFlowApi/src/app/guards/google.guard';
 import { Public } from '@apps/TeamFlowApi/src/app/decorators/isPublic';
-import { AuthService } from '@apps/TeamFlowApi/src/app/auth/auth.service';
+import { AuthService } from '@apps/TeamFlowApi/src/app/services/auth/auth.service';
 import { GithubOAuthGuard } from '@apps/TeamFlowApi/src/app/guards/github.guard';
 
 @Controller('auth')
@@ -26,7 +26,6 @@ export class AuthController {
   @Public()
   @UseGuards(GoogleOAuthGuard)
   googleAuthRedirect(@Request() req) {
-    // TODO Should return jwt token
     return this.authService.getOauthData(req);
   }
 
@@ -42,7 +41,6 @@ export class AuthController {
   @Public()
   @UseGuards(GithubOAuthGuard)
   githubAuthRedirect(@Request() req) {
-    // TODO Should return jwt token
     return this.authService.getOauthData(req);
   }
 }

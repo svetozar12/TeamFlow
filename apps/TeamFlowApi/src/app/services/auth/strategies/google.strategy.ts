@@ -27,9 +27,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       where: { email: profile.email },
     });
     if (!user) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { id, ...rest } = profile;
-      console.log(rest);
       const data = {
         email: profile.emails[0].value,
         password: '',

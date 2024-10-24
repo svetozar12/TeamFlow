@@ -16,13 +16,13 @@ union LoginResult = JWT | InternalServerError
 union ProfileResponse = Profile | InternalServerError
 
 type User {
-  userId: Int
+  id: Int
   email: String
   password: String
 }
 
 type Profile {
-  userId: Int
+  id: Int
   email: String
 }
 

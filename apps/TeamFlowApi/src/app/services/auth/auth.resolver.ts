@@ -1,7 +1,7 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { LocalGqlGuard } from '@apps/TeamFlowApi/src/app/guards/local.guard';
-import { AuthService } from '@apps/TeamFlowApi/src/app/auth/auth.service';
+import { AuthService } from '@apps/TeamFlowApi/src/app/services/auth/auth.service';
 import { Profile, JWT, LoginInput } from '@apps/TeamFlowApi/src/graphql';
 import { Public } from '@apps/TeamFlowApi/src/app/decorators/isPublic';
 
@@ -11,10 +11,12 @@ export class AuthResolver {
   @Mutation(() => String)
   @Public()
   @UseGuards(LocalGqlGuard)
-  login(@Args('input') input: LoginInput, @Context() context): JWT {
-    console.log(input);
-    if (input.refreshToken.refreshToken)
-      return this.authService.loginWithRefreshToken(input.refreshToken);
+  login(@Args('input') input: LoginInput, @Context() context): Promise<JWT> {
+    if (input?.refreshToken?.refreshToken)
+      return this.authService.loginWithRefreshToken(
+        input.refreshToken,
+        context
+      );
     return this.authService.login(context.req.user);
   }
 

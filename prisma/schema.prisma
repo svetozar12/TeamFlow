@@ -12,6 +12,15 @@ model User {
   email String
   password String
   accountType AccountType @default(Local)
+  token WhiteList[]
+}
+
+model WhiteList {
+  id Int @default(autoincrement()) @id
+  token String @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  expiresAt DateTime
 }
 
 enum AccountType {
