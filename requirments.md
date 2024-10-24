@@ -62,7 +62,6 @@ As the developer, you will be responsible for building both the **frontend** and
   - **Google**
   - **GitHub**
   - **Microsoft**
-  - **LinkedIn** (Optional)
 - **Two-Factor Authentication (2FA)**:
   - Implement 2FA for all users, including those using social logins.
   - Support methods like **Authenticator Apps** and **Email/SMS Verification**.
