@@ -20,7 +20,7 @@ async function bootstrap() {
   // filters
   app.useGlobalFilters(new GraphqlExceptionFilter());
   await app.listen(port);
-  Logger.log(`🚀 Application is running on: http://localhost:${port}`);
+  Logger.log(`🚀 Application is running on: http://localhost:${port}/graphql`);
 }
 
 bootstrap();

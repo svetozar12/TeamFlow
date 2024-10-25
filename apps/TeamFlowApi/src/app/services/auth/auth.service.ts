@@ -5,17 +5,21 @@ import {
   User,
   Profile,
   LoginInputToken,
+  Message,
 } from '@apps/TeamFlowApi/src/graphql';
 import { PrismaService } from '@apps/TeamFlowApi/src/app/prisma/prisma.service';
 import bcrypt from 'bcrypt';
 import { TokenService } from '@apps/TeamFlowApi/src/app/services/tokens/tokens.service';
+import { MailService } from '@apps/TeamFlowApi/src/app/services/mail/mail.service';
 
 @Injectable()
 export class AuthService {
+  private SALT = 10;
   constructor(
     private prismaService: PrismaService,
     private jwtService: JwtService,
-    private tokensService: TokenService
+    private tokensService: TokenService,
+    private mailService: MailService
   ) {}
 
   async validateUser(
@@ -25,8 +29,7 @@ export class AuthService {
     let user: User;
     user = await this.prismaService.user.findFirst({ where: { email } });
     if (!user) {
-      const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(pass, saltRounds);
+      const hashedPassword = await bcrypt.hash(pass, this.SALT);
       user = await this.prismaService.user.create({
         data: { email, password: hashedPassword },
       });
@@ -62,6 +65,65 @@ export class AuthService {
       accessToken,
       refreshToken,
       __typename: 'JWT',
+    };
+  }
+
+  async resetPassword(
+    email: string,
+    newPassword: string,
+    ID: string
+  ): Promise<Message> {
+    const user = await this.prismaService.user.findFirst({
+      where: { email },
+      include: { passwordChangeRequest: true },
+    });
+    const result = await bcrypt.compare(ID, user.passwordChangeRequest.ID);
+    if (!result) throw new UnauthorizedException();
+
+    const hashedPassword = await bcrypt.hash(newPassword, this.SALT);
+    await this.prismaService.user.update({
+      where: { email },
+      data: { password: hashedPassword },
+    });
+    await this.prismaService.passwordChangeRequest.delete({
+      where: { userId: user.id },
+    });
+
+    return { __typename: 'Message', data: 'Success' };
+  }
+
+  requestResetPassword(email: string): Message {
+    const uniqueString = crypto.randomUUID();
+    this.mailService.sendEmail(
+      email,
+      'Password reset',
+      'reset password url ' + uniqueString,
+      async (err) => {
+        if (err) return;
+        const hashedResetPasswordID = await bcrypt.hash(
+          uniqueString,
+          this.SALT
+        );
+
+        const existingRequest =
+          await this.prismaService.passwordChangeRequest.findFirst({
+            where: { user: { email } },
+          });
+
+        if (existingRequest) {
+          await this.prismaService.passwordChangeRequest.delete({
+            where: { id: existingRequest.id },
+          });
+        }
+
+        await this.prismaService.passwordChangeRequest.create({
+          data: { user: { connect: { email } }, ID: hashedResetPasswordID },
+        });
+      }
+    );
+    return {
+      __typename: 'Message',
+      data: 'Check your email for reset password link',
     };
   }
 
@@ -102,8 +164,21 @@ export class AuthService {
     };
   }
 
-  getProfile(context): Profile {
+  getProfile(context: { req: { user: User } }): Profile {
     return { ...context.req.user, __typename: 'Profile' };
+  }
+
+  async deleteProfile(context: { req: { user: User } }): Promise<Profile> {
+    const userId = context.req.user.id;
+    const user = await this.prismaService.user.delete({
+      where: { id: userId },
+    });
+
+    delete user.password;
+    return {
+      ...user,
+      __typename: 'Profile',
+    };
   }
 
   getOauthData(@Request() req): JWT {

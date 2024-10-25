@@ -2,7 +2,12 @@ import { UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { LocalGqlGuard } from '@apps/TeamFlowApi/src/app/guards/local.guard';
 import { AuthService } from '@apps/TeamFlowApi/src/app/services/auth/auth.service';
-import { Profile, JWT, LoginInput } from '@apps/TeamFlowApi/src/graphql';
+import {
+  Profile,
+  JWT,
+  LoginInput,
+  Message,
+} from '@apps/TeamFlowApi/src/graphql';
 import { Public } from '@apps/TeamFlowApi/src/app/decorators/isPublic';
 
 @Resolver('Auth')
@@ -18,6 +23,27 @@ export class AuthResolver {
         context
       );
     return this.authService.login(context.req.user);
+  }
+
+  @Mutation(() => Profile)
+  async deleteProfile(@Context() context): Promise<Profile> {
+    return this.authService.deleteProfile(context);
+  }
+
+  @Mutation(() => Message)
+  @Public()
+  async resetPassword(
+    @Args('email') email: string,
+    @Args('newPassword') newPassword: string,
+    @Args('ID') ID: string
+  ): Promise<Message> {
+    return this.authService.resetPassword(email, newPassword, ID);
+  }
+
+  @Mutation(() => Message)
+  @Public()
+  async requestResetPassword(@Args('email') email: string): Promise<Message> {
+    return this.authService.requestResetPassword(email);
   }
 
   @Query(() => Profile)
