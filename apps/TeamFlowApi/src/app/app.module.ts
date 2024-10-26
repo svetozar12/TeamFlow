@@ -7,12 +7,15 @@ import { RedisModule } from '@apps/TeamFlowApi/src/app/databases/redis/redis.mod
 import { ScheduleModule } from '@nestjs/schedule';
 import { TokenCleanupService } from '@apps/TeamFlowApi/src/app/services/tokenCleanup/tokenCleanup.service';
 import { PrismaService } from '@apps/TeamFlowApi/src/app/prisma/prisma.service';
+import { MailModule } from '@apps/TeamFlowApi/src/app/services/mail/mail.module';
 
 @Module({
   imports: [
+    MailModule,
     ScheduleModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
+      introspection: true,
       typePaths: ['./**/*.graphql'],
       playground: false,
       formatError: (error) => {

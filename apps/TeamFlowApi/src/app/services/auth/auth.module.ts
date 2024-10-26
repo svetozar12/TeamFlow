@@ -10,6 +10,7 @@ import { GoogleStrategy } from '@apps/TeamFlowApi/src/app/services/auth/strategi
 import { GithubStrategy } from '@apps/TeamFlowApi/src/app/services/auth/strategies/github.strategy';
 import { PrismaService } from '@apps/TeamFlowApi/src/app/prisma/prisma.service';
 import { TokenService } from '@apps/TeamFlowApi/src/app/services/tokens/tokens.service';
+import { MailService } from '@apps/TeamFlowApi/src/app/services/mail/mail.service';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { TokenService } from '@apps/TeamFlowApi/src/app/services/tokens/tokens.s
     AuthResolver,
     PrismaService,
     TokenService,
+    MailService,
   ],
   exports: [AuthService],
 })

@@ -31,6 +31,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         email: profile.emails[0].value,
         password: '',
         accountType: AccountType.Google,
+        isEnabled: true,
+        verificationToken: '',
       };
       user = await this.prismaService.user.create({ data });
     }
