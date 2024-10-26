@@ -3,7 +3,7 @@
  * This is only a minimal backend to get started.
  */
 
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { GraphqlExceptionFilter } from './app/filter/gqlException.filter';
@@ -19,6 +19,8 @@ async function bootstrap() {
   app.useGlobalGuards(new JWTGqlGuard(reflector));
   // filters
   app.useGlobalFilters(new GraphqlExceptionFilter());
+  // pipes
+  app.useGlobalPipes(new ValidationPipe());
   await app.listen(port);
   Logger.log(
     `🚀 Application is running on: http://localhost:${port}/graphql in ${

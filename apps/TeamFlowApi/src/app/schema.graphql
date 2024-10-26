@@ -1,8 +1,7 @@
-
-# Represents an error returned by the server
 type InternalServerError {
   message: String!
   status: Int
+  details: [String]
 }
 
 type JWT {
@@ -54,12 +53,26 @@ input LoginInputToken {
   refreshToken: String!
 }
 
+input VerifyEmailInput {
+  token: String!
+}
+
+input RequestResetPasswordInput {
+  email: String!
+}
+
+input ResetPasswordInput {
+  email: String!
+  newPassword: String!
+  ID: String!
+}
+
 # Mutation to add a new set and log in a user
 type Mutation {
   login(input: LoginInput!): LoginResult
-  register(email: String!,password: String!): MessageResponse
-  verifyEmail(token: String!):JWT
+  register(input:LoginInputLocal!): MessageResponse
+  verifyEmail(input: VerifyEmailInput!):JWT
   deleteProfile: ProfileResponse
-  requestResetPassword(email: String!): MessageResponse
-  resetPassword(email:String!, newPassword:String!,ID:String!): MessageResponse
+  requestResetPassword(input: RequestResetPasswordInput!): MessageResponse
+  resetPassword(input: ResetPasswordInput!): MessageResponse
 }
