@@ -13,7 +13,7 @@ import { Public } from '@apps/TeamFlowApi/src/app/decorators/isPublic';
 @Resolver('Auth')
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
-  @Mutation(() => String)
+  @Mutation(() => JWT)
   @Public()
   @UseGuards(LocalGqlGuard)
   login(@Args('input') input: LoginInput, @Context() context): Promise<JWT> {
@@ -23,6 +23,21 @@ export class AuthResolver {
         context
       );
     return this.authService.login(context.req.user);
+  }
+
+  @Mutation(() => JWT)
+  @Public()
+  verifyEmail(@Args('token') token: string): Promise<JWT> {
+    return this.authService.verifyEmail(token);
+  }
+
+  @Mutation(() => Message)
+  @Public()
+  register(
+    @Args('email') email: string,
+    @Args('password') password: string
+  ): Promise<Message> {
+    return this.authService.register(email, password);
   }
 
   @Mutation(() => Profile)

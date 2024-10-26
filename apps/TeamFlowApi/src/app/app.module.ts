@@ -15,6 +15,7 @@ import { MailModule } from '@apps/TeamFlowApi/src/app/services/mail/mail.module'
     ScheduleModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
+      introspection: true,
       typePaths: ['./**/*.graphql'],
       playground: false,
       formatError: (error) => {

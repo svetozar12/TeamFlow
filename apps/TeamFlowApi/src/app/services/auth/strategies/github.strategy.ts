@@ -32,6 +32,8 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
         email: profile.emails[0].value,
         password: '',
         accountType: AccountType.Github,
+        isEnabled: true,
+        verificationToken: '',
       } as User;
       user = await this.prismaService.user.create({ data });
     }

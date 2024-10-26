@@ -57,6 +57,8 @@ input LoginInputToken {
 # Mutation to add a new set and log in a user
 type Mutation {
   login(input: LoginInput!): LoginResult
+  register(email: String!,password: String!): MessageResponse
+  verifyEmail(token: String!):JWT
   deleteProfile: ProfileResponse
   requestResetPassword(email: String!): MessageResponse
   resetPassword(email:String!, newPassword:String!,ID:String!): MessageResponse

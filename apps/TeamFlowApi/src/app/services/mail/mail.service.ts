@@ -26,6 +26,7 @@ export class MailService {
     to: string,
     subject: string,
     text: string,
+    html: string,
     callback: (error: Error | null) => void
   ): void {
     const mailOptions: SendMailOptions = {
@@ -33,6 +34,7 @@ export class MailService {
       to,
       subject,
       text,
+      html,
     };
 
     const nodeEnv = process.env.NODE_ENV;
