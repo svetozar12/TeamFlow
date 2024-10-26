@@ -2,13 +2,13 @@ import { UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { LocalGqlGuard } from '@apps/TeamFlowApi/src/app/guards/local.guard';
 import { AuthService } from '@apps/TeamFlowApi/src/app/services/auth/auth.service';
-import {
-  Profile,
-  JWT,
-  LoginInput,
-  Message,
-} from '@apps/TeamFlowApi/src/graphql';
+import { Profile, JWT, Message } from '@apps/TeamFlowApi/src/graphql';
 import { Public } from '@apps/TeamFlowApi/src/app/decorators/isPublic';
+import { RegisterDTO } from '@apps/TeamFlowApi/src/app/services/auth/dtos/register.dto';
+import { ResetPasswordDTO } from '@apps/TeamFlowApi/src/app/services/auth/dtos/resetPassword.dto';
+import { VerifyEmailDTO } from '@apps/TeamFlowApi/src/app/services/auth/dtos/verifyEmail.dto';
+import { RequestResetPasswordDTO } from '@apps/TeamFlowApi/src/app/services/auth/dtos/requestResetPassword.dto';
+import { LoginDTO } from '@apps/TeamFlowApi/src/app/services/auth/dtos/login.dto';
 
 @Resolver('Auth')
 export class AuthResolver {
@@ -16,7 +16,7 @@ export class AuthResolver {
   @Mutation(() => JWT)
   @Public()
   @UseGuards(LocalGqlGuard)
-  login(@Args('input') input: LoginInput, @Context() context): Promise<JWT> {
+  login(@Args('input') input: LoginDTO, @Context() context): Promise<JWT> {
     if (input?.refreshToken?.refreshToken)
       return this.authService.loginWithRefreshToken(
         input.refreshToken,
@@ -27,16 +27,13 @@ export class AuthResolver {
 
   @Mutation(() => JWT)
   @Public()
-  verifyEmail(@Args('token') token: string): Promise<JWT> {
+  verifyEmail(@Args('input') { token }: VerifyEmailDTO): Promise<JWT> {
     return this.authService.verifyEmail(token);
   }
 
   @Mutation(() => Message)
   @Public()
-  register(
-    @Args('email') email: string,
-    @Args('password') password: string
-  ): Promise<Message> {
+  register(@Args('input') { email, password }: RegisterDTO): Promise<Message> {
     return this.authService.register(email, password);
   }
 
@@ -48,16 +45,16 @@ export class AuthResolver {
   @Mutation(() => Message)
   @Public()
   async resetPassword(
-    @Args('email') email: string,
-    @Args('newPassword') newPassword: string,
-    @Args('ID') ID: string
+    @Args('input') { email, newPassword, ID }: ResetPasswordDTO
   ): Promise<Message> {
     return this.authService.resetPassword(email, newPassword, ID);
   }
 
   @Mutation(() => Message)
   @Public()
-  async requestResetPassword(@Args('email') email: string): Promise<Message> {
+  async requestResetPassword(
+    @Args('input') { email }: RequestResetPasswordDTO
+  ): Promise<Message> {
     return this.authService.requestResetPassword(email);
   }
 
