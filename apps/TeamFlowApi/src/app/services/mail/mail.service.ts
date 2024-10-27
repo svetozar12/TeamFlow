@@ -52,6 +52,7 @@ export class MailService {
       this.logger.log(kleur.blue(`TO: ${to}`));
       this.logger.log(kleur.blue(`SUBJECT: ${subject}`));
       this.logger.log(kleur.blue(`TEXT: ${text}`));
+      this.logger.log(kleur.blue(`HTML: ${html}`));
       // mock successful email when working on development or test environment
       return callback(null);
     }

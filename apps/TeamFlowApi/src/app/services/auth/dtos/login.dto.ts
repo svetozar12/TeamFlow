@@ -1,12 +1,11 @@
-import { IsEmail, IsString, IsJWT, ValidateNested } from 'class-validator';
+import { IsEmail, IsString, ValidateIf, ValidateNested } from 'class-validator';
 import {
   LoginInput,
-  LoginInputLocal,
-  LoginInputToken,
+  LoginCredentialsInput,
 } from '@apps/TeamFlowApi/src/graphql';
 import { Type } from 'class-transformer';
 
-export class CredentialsDTO extends LoginInputLocal {
+export class CredentialsDTO extends LoginCredentialsInput {
   @IsEmail()
   email: string;
 
@@ -14,17 +13,14 @@ export class CredentialsDTO extends LoginInputLocal {
   password: string;
 }
 
-export class RefreshTokenDTO extends LoginInputToken {
-  @IsJWT()
-  refreshToken: string;
-}
-
 export class LoginDTO extends LoginInput {
   @ValidateNested()
   @Type(() => CredentialsDTO)
   credentials: CredentialsDTO;
 
-  @ValidateNested()
-  @Type(() => RefreshTokenDTO)
-  refreshToken: RefreshTokenDTO;
+  @ValidateIf((o) => !o.credentials || Object.keys(o.credentials).length === 0)
+  @IsString()
+  refreshToken: string;
 }
+
+// 61ea1833

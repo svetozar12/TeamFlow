@@ -16,6 +16,9 @@ model User {
   passwordChangeRequest PasswordChangeRequest?
   isEnabled Boolean
   verificationToken String
+  isTwoFaEnabled Boolean @default(false)
+  twoFaSecret String?
+  hashedBackupCodes String[]
 }
 
 model WhiteList {
