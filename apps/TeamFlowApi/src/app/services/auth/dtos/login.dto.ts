@@ -1,4 +1,4 @@
-import { IsEmail, IsString, ValidateNested } from 'class-validator';
+import { IsEmail, IsString, ValidateIf, ValidateNested } from 'class-validator';
 import {
   LoginInput,
   LoginCredentialsInput,
@@ -18,6 +18,9 @@ export class LoginDTO extends LoginInput {
   @Type(() => CredentialsDTO)
   credentials: CredentialsDTO;
 
+  @ValidateIf((o) => !o.credentials || Object.keys(o.credentials).length === 0)
   @IsString()
   refreshToken: string;
 }
+
+// 61ea1833

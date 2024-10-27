@@ -46,7 +46,8 @@ export class AuthService {
   async login(user: User): Promise<JWT | TwoFAJWT> {
     const payload = { username: user.email, sub: user.id };
     const expiresIn = 30 * 24 * 60 * 60; // 2592000 seconds
-    console.log(user);
+
+    if (!user.isEnabled) throw new UnauthorizedException('User is disabled');
 
     if (user.isTwoFaEnabled) {
       const twoFAToken = this.jwtService.sign(payload, {
@@ -146,8 +147,8 @@ export class AuthService {
 
   private getPasswordResetEmailContent(resetLink: string): string {
     return `
-    <html>
-      <head>
+    <html lang="en">
+      <head title="reset password" >
         <style>
           body {
             font-family: Arial, sans-serif;
@@ -188,7 +189,7 @@ export class AuthService {
             color: #aaa;
             padding-top: 20px;
           }
-        </style>
+        </style><title>reset password</title>
       </head>
       <body>
         <div class="email-container">
@@ -212,8 +213,8 @@ export class AuthService {
 
   private getEmailVerificationContent(token: string): string {
     return `
-    <html>
-      <head>
+    <html lang="en">
+      <head title="verify email">
         <style>
           body {
             font-family: Arial, sans-serif;
@@ -254,7 +255,7 @@ export class AuthService {
             color: #aaa;
             padding-top: 20px;
           }
-        </style>
+        </style><title>verify email</title>
       </head>
       <body>
         <div class="email-container">
@@ -322,7 +323,7 @@ export class AuthService {
       where: { id: Number(userId) },
     });
     delete user.password;
-    if (!user) throw new UnauthorizedException();
+    if (!user || !user.isEnabled) throw new UnauthorizedException();
 
     const expiresIn = 30 * 24 * 60 * 60; // 2592000 seconds
 
@@ -373,5 +374,62 @@ export class AuthService {
       refreshToken: this.jwtService.sign(payload, { expiresIn: '90d' }),
       __typename: 'JWT',
     };
+  }
+
+  async loginWithBackupCode(
+    email: string,
+    backupCode: string,
+    password: string
+  ): Promise<JWT> {
+    const user = await this.validateBackupCode(email, backupCode);
+    if (
+      !user ||
+      !(await bcrypt.compare(password, user.password)) ||
+      !user.isTwoFaEnabled ||
+      !user.isEnabled
+    )
+      throw new UnauthorizedException();
+
+    const expiresIn = 30 * 24 * 60 * 60; // 2592000 seconds
+    const payload = { username: user.email, sub: user.id };
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: '1h',
+    });
+    const refreshToken = this.jwtService.sign(
+      { message: 'Nothing to be seen here :)' },
+      {
+        expiresIn: expiresIn,
+      }
+    );
+    await this.tokensService.saveToken(refreshToken, user.id, expiresIn);
+    return {
+      accessToken,
+      refreshToken,
+      __typename: 'JWT',
+    };
+  }
+
+  private async validateBackupCode(email: string, backupCode: string) {
+    const user = await this.prismaService.user.findFirst({ where: { email } });
+    if (!user || !user.hashedBackupCodes) throw new UnauthorizedException();
+
+    // Check each stored backup code to see if it matches the entered code
+    for (const [index, hashedCode] of user.hashedBackupCodes.entries()) {
+      const isMatch = await bcrypt.compare(backupCode, hashedCode);
+      if (isMatch) {
+        // If matched, remove the used code from the list
+        user.hashedBackupCodes.splice(index, 1);
+        await this.prismaService.user.update({
+          where: { id: user.id },
+          data: {
+            hashedBackupCodes: user.hashedBackupCodes,
+            isTwoFaEnabled: false,
+            twoFaSecret: '',
+          },
+        });
+        return user;
+      }
+    }
+    return false;
   }
 }

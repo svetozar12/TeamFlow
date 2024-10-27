@@ -1,9 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '@apps/TeamFlowApi/src/app/prisma/prisma.service';
-import { JWT, Message, TwoFA, User } from '@apps/TeamFlowApi/src/graphql';
+import { JWT, ConfirmTwoFA, TwoFA, User } from '@apps/TeamFlowApi/src/graphql';
 import * as OTPAuth from 'otpauth';
 import { JwtService } from '@nestjs/jwt';
 import { TokenService } from '@apps/TeamFlowApi/src/app/services/tokens/tokens.service';
+import * as crypto from 'crypto';
+import bcrypt from 'bcrypt';
 
 @Injectable()
 export class TwoFAService {
@@ -42,7 +44,7 @@ export class TwoFAService {
   async confirm2FA(
     context: { req: { user: User } },
     userCode: string
-  ): Promise<Message> {
+  ): Promise<ConfirmTwoFA> {
     // Fetch the user and their stored twoFaSecret
     const user = await this.prismaService.user.findFirst({
       where: { id: context.req.user.id },
@@ -69,7 +71,13 @@ export class TwoFAService {
       throw new UnauthorizedException('Code is invalid');
     }
 
-    return { __typename: 'Message', data: 'Code is valid' };
+    const backupCodes = this.generateBackupCodes();
+    const hashedBackupCodes = await this.hashBackupCodes(backupCodes);
+    await this.prismaService.user.update({
+      where: { id: context.req.user.id },
+      data: { hashedBackupCodes },
+    });
+    return { __typename: 'ConfirmTwoFA', backupCodes };
   }
 
   async verify2FA(userCode: string, tempToken: string): Promise<JWT> {
@@ -119,7 +127,24 @@ export class TwoFAService {
   }
 
   private validateTempToken(tempToken: string) {
-    const decoded = this.jwtService.verify(tempToken);
-    return decoded;
+    return this.jwtService.verify(tempToken);
+  }
+
+  private generateBackupCodes(count = 10): string[] {
+    const codes: string[] = [];
+    for (let i = 0; i < count; i++) {
+      const code = crypto.randomBytes(4).toString('hex');
+      codes.push(code);
+    }
+    return codes;
+  }
+
+  private async hashBackupCodes(codes): Promise<string[]> {
+    const hashedCodes: string[] = [];
+    for (const code of codes) {
+      const hash = await bcrypt.hash(code, 10);
+      hashedCodes.push(hash);
+    }
+    return hashedCodes;
   }
 }

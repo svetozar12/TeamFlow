@@ -2,7 +2,13 @@ import { UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { LocalGqlGuard } from '@apps/TeamFlowApi/src/app/guards/local.guard';
 import { AuthService } from '@apps/TeamFlowApi/src/app/services/auth/auth.service';
-import { Profile, JWT, Message, TwoFAJWT } from '@apps/TeamFlowApi/src/graphql';
+import {
+  Profile,
+  JWT,
+  Message,
+  TwoFAJWT,
+  LoginWithBackupCodeInput,
+} from '@apps/TeamFlowApi/src/graphql';
 import { Public } from '@apps/TeamFlowApi/src/app/decorators/isPublic';
 import { RegisterDTO } from '@apps/TeamFlowApi/src/app/services/auth/dtos/register.dto';
 import { ResetPasswordDTO } from '@apps/TeamFlowApi/src/app/services/auth/dtos/resetPassword.dto';
@@ -26,6 +32,14 @@ export class AuthResolver {
         context
       );
     return this.authService.login(context.req.user);
+  }
+
+  @Mutation(() => JWT)
+  @Public()
+  loginWithBackupCode(
+    @Args('input') { backupCode, email, password }: LoginWithBackupCodeInput
+  ): Promise<JWT> {
+    return this.authService.loginWithBackupCode(email, backupCode, password);
   }
 
   @Mutation(() => JWT)

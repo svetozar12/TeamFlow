@@ -23,12 +23,17 @@ type Message {
   data: String!
 }
 
+type ConfirmTwoFA {
+  backupCodes: [String!]!
+}
+
 # Union Types
 
 union AuthResult = JWT | TwoFAJWT | InternalServerError
 union Response = Message | InternalServerError
 union ProfileResponse = Profile | InternalServerError
 union TwoFAResponse = TwoFA | InternalServerError
+union ConfirmTwoFAResponse = ConfirmTwoFA | InternalServerError
 
 # Core Types
 
@@ -51,6 +56,12 @@ type Profile {
 input LoginInput {
   credentials: LoginCredentialsInput
   refreshToken: String
+}
+
+input LoginWithBackupCodeInput {
+  email: String!
+  backupCode: String!
+  password: String!
 }
 
 input LoginCredentialsInput {
@@ -91,13 +102,14 @@ type Query {
 
 type Mutation {
   login(input: LoginInput!): AuthResult!
+  loginWithBackupCode(input: LoginWithBackupCodeInput!): AuthResult!
   register(input: LoginCredentialsInput!): Response!
   verifyEmail(input: VerifyEmailInput!): AuthResult!
   deleteProfile: ProfileResponse
   requestPasswordReset(input: RequestPasswordResetInput!): Response!
   resetPassword(input: ResetPasswordInput!): Response!
   enableTwoFA: TwoFAResponse!
-  confirmTwoFA(input: ConfirmTwoFAInput!): Response!
+  confirmTwoFA(input: ConfirmTwoFAInput!): ConfirmTwoFAResponse!
   verifyTwoFA(input: VerifyTwoFAInput!): AuthResult!
 }
 

@@ -2,8 +2,8 @@ import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import {
   TwoFA,
   VerifyTwoFAInput,
-  Message,
   JWT,
+  ConfirmTwoFA,
 } from '@apps/TeamFlowApi/src/graphql';
 import { TwoFAService } from '@apps/TeamFlowApi/src/app/services/twoFA/twoFA.service';
 import { Public } from '@apps/TeamFlowApi/src/app/decorators/isPublic';
@@ -16,11 +16,11 @@ export class TwoFAResolver {
   enableTwoFA(@Context() context): Promise<TwoFA> {
     return this.twoFaService.enable2FA(context);
   }
-  @Mutation(() => Message)
+  @Mutation(() => ConfirmTwoFA)
   confirmTwoFA(
     @Args('input') { code }: ConfirmTwoFADto,
     @Context() context
-  ): Promise<Message> {
+  ): Promise<ConfirmTwoFA> {
     return this.twoFaService.confirm2FA(context, code);
   }
   @Mutation(() => JWT)

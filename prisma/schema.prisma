@@ -18,6 +18,7 @@ model User {
   verificationToken String
   isTwoFaEnabled Boolean @default(false)
   twoFaSecret String?
+  hashedBackupCodes String[]
 }
 
 model WhiteList {
