@@ -11,6 +11,9 @@
     "docker-build-local-all": "yarn nx run-many --target=docker-build-local --all",
     "deploy": "yarn nx run-many --target=deploy --all"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "private": true,
   "dependencies": {
     "@apollo/server": "^4.11.0",

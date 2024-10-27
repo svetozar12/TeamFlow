@@ -8,32 +8,50 @@ generator client {
 }
 
 model User {
-  id    Int     @default(autoincrement()) @id
-  email String @unique
-  password String
-  accountType AccountType @default(Local)
-  token WhiteList[]
-  passwordChangeRequest PasswordChangeRequest?
-  isEnabled Boolean
-  verificationToken String
-  isTwoFaEnabled Boolean @default(false)
-  twoFaSecret String?
-  hashedBackupCodes String[]
+  id                     Int                   @default(autoincrement()) @id
+  email                  String                @unique
+  password               String
+  accountType            AccountType           @default(Local)
+  token                  WhiteList[]
+  passwordChangeRequests PasswordChangeRequest[]
+  isEnabled              Boolean
+  verificationToken      String?
+  isTwoFaEnabled         Boolean               @default(false)
+  twoFaSecret            String?
+  hashedBackupCodes      String[]
+  roles                  Role[]                @relation("UserRoles") // Many-to-many relationship
+}
+
+model Role {
+  id          Int           @default(autoincrement()) @id
+  name        String        @unique
+  users       User[]        @relation("UserRoles") // Many-to-many relationship with User
+  permissions Permission[]  @relation("RolePermissions") // Many-to-many relationship with Permission
+}
+
+model Permission {
+  id         Int                   @default(autoincrement()) @id
+  feature    PermissionFeatureType
+  canCreate  Boolean               @default(false)
+  canRead    Boolean               @default(false)
+  canUpdate  Boolean               @default(false)
+  canDelete  Boolean               @default(false)
+  roles      Role[]                @relation("RolePermissions") // Many-to-many relationship with Role
 }
 
 model WhiteList {
-  id Int @default(autoincrement()) @id
-  token String @unique
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int
+  id        Int      @default(autoincrement()) @id
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
   expiresAt DateTime
 }
 
 model PasswordChangeRequest {
-  id Int @default(autoincrement()) @id
-  ID String @unique
-  user   User @relation(fields: [userId], references: [id])
-  userId Int @unique
+  id     Int    @default(autoincrement()) @id
+  ID     String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
 }
 
 enum AccountType {
@@ -42,3 +60,17 @@ enum AccountType {
   Github
 }
 
+enum PermissionFeatureType {
+  UserManagement
+  ProjectCreation
+  ProjectDeletion
+  AccessProjects
+  TaskManagement
+  CommunicationChannels
+}
+
+enum PermissionType {
+  Full
+  OwnProjects
+  No
+}
