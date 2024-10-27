@@ -72,22 +72,15 @@ export class TwoFAService {
     return { __typename: 'Message', data: 'Code is valid' };
   }
 
-  async verify2FA(
-    context: { req: { user: User } },
-    userCode: string,
-    tempToken: string
-  ): Promise<JWT> {
-    const isValidTempToken = this.validateTempToken(
-      tempToken,
-      context.req.user.id
-    );
+  async verify2FA(userCode: string, tempToken: string): Promise<JWT> {
+    const isValidTempToken = this.validateTempToken(tempToken);
     if (!isValidTempToken) throw new UnauthorizedException();
     // Fetch the user and their stored twoFaSecret
     const user = await this.prismaService.user.findFirst({
-      where: { id: context.req.user.id },
+      where: { id: isValidTempToken.sub },
     });
     if (!user || !user.twoFaSecret) throw new UnauthorizedException();
-
+    console.log(user, 'Hello');
     const totp = new OTPAuth.TOTP({
       issuer: this.TOTP_ISSUER,
       label: this.TOTP_LABEL,
@@ -104,7 +97,11 @@ export class TwoFAService {
       throw new UnauthorizedException('Code is invalid');
     }
 
-    const payload = { username: user.email, sub: user.id };
+    const payload = {
+      username: user.email,
+      sub: user.id,
+      twoFa: user.isTwoFaEnabled,
+    };
     const expiresIn = 30 * 24 * 60 * 60;
 
     const accessToken = this.jwtService.sign(payload, {
@@ -121,8 +118,8 @@ export class TwoFAService {
     return { __typename: 'JWT', accessToken, refreshToken };
   }
 
-  private validateTempToken(tempToken: string, userId: number): boolean {
+  private validateTempToken(tempToken: string) {
     const decoded = this.jwtService.verify(tempToken);
-    return decoded.userId === userId;
+    return decoded;
   }
 }

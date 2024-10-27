@@ -2,12 +2,12 @@ import { UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { LocalGqlGuard } from '@apps/TeamFlowApi/src/app/guards/local.guard';
 import { AuthService } from '@apps/TeamFlowApi/src/app/services/auth/auth.service';
-import { Profile, JWT, Message } from '@apps/TeamFlowApi/src/graphql';
+import { Profile, JWT, Message, TwoFAJWT } from '@apps/TeamFlowApi/src/graphql';
 import { Public } from '@apps/TeamFlowApi/src/app/decorators/isPublic';
 import { RegisterDTO } from '@apps/TeamFlowApi/src/app/services/auth/dtos/register.dto';
 import { ResetPasswordDTO } from '@apps/TeamFlowApi/src/app/services/auth/dtos/resetPassword.dto';
 import { VerifyEmailDTO } from '@apps/TeamFlowApi/src/app/services/auth/dtos/verifyEmail.dto';
-import { RequestResetPasswordDTO } from '@apps/TeamFlowApi/src/app/services/auth/dtos/requestResetPassword.dto';
+import { RequestPasswordResetDto } from '@apps/TeamFlowApi/src/app/services/auth/dtos/requestPasswordReset.dto';
 import { LoginDTO } from '@apps/TeamFlowApi/src/app/services/auth/dtos/login.dto';
 
 @Resolver('Auth')
@@ -16,8 +16,11 @@ export class AuthResolver {
   @Mutation(() => JWT)
   @Public()
   @UseGuards(LocalGqlGuard)
-  login(@Args('input') input: LoginDTO, @Context() context): Promise<JWT> {
-    if (input?.refreshToken?.refreshToken)
+  login(
+    @Args('input') input: LoginDTO,
+    @Context() context
+  ): Promise<JWT | TwoFAJWT> {
+    if (input?.refreshToken)
       return this.authService.loginWithRefreshToken(
         input.refreshToken,
         context
@@ -52,8 +55,8 @@ export class AuthResolver {
 
   @Mutation(() => Message)
   @Public()
-  async requestResetPassword(
-    @Args('input') { email }: RequestResetPasswordDTO
+  async requestPasswordReset(
+    @Args('input') { email }: RequestPasswordResetDto
   ): Promise<Message> {
     return this.authService.requestResetPassword(email);
   }

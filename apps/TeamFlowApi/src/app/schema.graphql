@@ -1,3 +1,5 @@
+# Error and Auth Types
+
 type InternalServerError {
   message: String!
   status: Int
@@ -10,32 +12,29 @@ type JWT {
 }
 
 type TwoFAJWT {
-  twoFAToken:String!
-}
-
-type Message {
-  data: String
+  twoFAToken: String!
 }
 
 type TwoFA {
   otpauth: String!
 }
 
-# Union to return either a SetList or an InternalServerError
-union LoginResult = JWT | TwoFAJWT | InternalServerError
+type Message {
+  data: String!
+}
 
+# Union Types
+
+union AuthResult = JWT | TwoFAJWT | InternalServerError
+union Response = Message | InternalServerError
 union ProfileResponse = Profile | InternalServerError
+union TwoFAResponse = TwoFA | InternalServerError
 
-union MessageResponse = Message | InternalServerError
-
-union Enable2FAResponse = TwoFA | InternalServerError
-
-# Types
+# Core Types
 
 type User {
   id: Int!
   email: String!
-  password: String!
   accountType: String!
   isTwoFaEnabled: Boolean!
   isEnabled: Boolean!
@@ -47,29 +46,23 @@ type Profile {
   accountType: String!
 }
 
-type Query {
-  profile: ProfileResponse
-}
+# Input Types
 
 input LoginInput {
-  credentials: LoginInputLocal
-  refreshToken: LoginInputToken
+  credentials: LoginCredentialsInput
+  refreshToken: String
 }
 
-input LoginInputLocal {
+input LoginCredentialsInput {
   email: String!
   password: String!
-}
-
-input LoginInputToken {
-  refreshToken: String!
 }
 
 input VerifyEmailInput {
   token: String!
 }
 
-input RequestResetPasswordInput {
+input RequestPasswordResetInput {
   email: String!
 }
 
@@ -88,19 +81,23 @@ input VerifyTwoFAInput {
   tempToken: String!
 }
 
-# Mutation to add a new set and log in a user
-type Mutation {
-  # auth
-  login(input: LoginInput!): LoginResult
-  register(input:LoginInputLocal!): MessageResponse
-  verifyEmail(input: VerifyEmailInput!):JWT
-  # user operations
-  deleteProfile: ProfileResponse
-  requestResetPassword(input: RequestResetPasswordInput!): MessageResponse
-  resetPassword(input: ResetPasswordInput!): MessageResponse
-  # 2FA
-  enable2FA:Enable2FAResponse
-  confirm2FA(input:ConfirmTwoFAInput!):MessageResponse
-  verify2FA(input:VerifyTwoFAInput!):MessageResponse
+# Queries
 
+type Query {
+  profile: ProfileResponse!
 }
+
+# Mutations
+
+type Mutation {
+  login(input: LoginInput!): AuthResult!
+  register(input: LoginCredentialsInput!): Response!
+  verifyEmail(input: VerifyEmailInput!): AuthResult!
+  deleteProfile: ProfileResponse
+  requestPasswordReset(input: RequestPasswordResetInput!): Response!
+  resetPassword(input: ResetPasswordInput!): Response!
+  enableTwoFA: TwoFAResponse!
+  confirmTwoFA(input: ConfirmTwoFAInput!): Response!
+  verifyTwoFA(input: VerifyTwoFAInput!): AuthResult!
+}
+

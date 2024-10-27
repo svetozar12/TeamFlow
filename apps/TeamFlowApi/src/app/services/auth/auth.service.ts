@@ -4,7 +4,6 @@ import {
   JWT,
   User,
   Profile,
-  LoginInputToken,
   Message,
   TwoFAJWT,
 } from '@apps/TeamFlowApi/src/graphql';
@@ -107,7 +106,7 @@ export class AuthService {
     return { data: 'Successful', __typename: 'Message' };
   }
 
-  async verifyEmail(verificationToken): Promise<JWT> {
+  async verifyEmail(verificationToken: string): Promise<JWT> {
     let user = await this.prismaService.user.findFirst({
       where: { verificationToken },
     });
@@ -314,7 +313,7 @@ export class AuthService {
   }
 
   async loginWithRefreshToken(
-    { refreshToken: token }: LoginInputToken,
+    token: string,
     context: { req: { user: User } }
   ): Promise<JWT> {
     const userId = await this.tokensService.getToken(token);
