@@ -6,6 +6,7 @@ import {
   Profile,
   LoginInputToken,
   Message,
+  TwoFAJWT,
 } from '@apps/TeamFlowApi/src/graphql';
 import { PrismaService } from '@apps/TeamFlowApi/src/app/prisma/prisma.service';
 import bcrypt from 'bcrypt';
@@ -43,9 +44,18 @@ export class AuthService {
     return { ...user, __typename: 'User' };
   }
 
-  async login(user: User): Promise<JWT> {
+  async login(user: User): Promise<JWT | TwoFAJWT> {
     const payload = { username: user.email, sub: user.id };
     const expiresIn = 30 * 24 * 60 * 60; // 2592000 seconds
+    console.log(user);
+
+    if (user.isTwoFaEnabled) {
+      const twoFAToken = this.jwtService.sign(payload, {
+        expiresIn: 10 * 60000, //10 minutes
+      });
+
+      return { __typename: 'TwoFAJWT', twoFAToken };
+    }
 
     const accessToken = this.jwtService.sign(payload, {
       expiresIn: '1h',
@@ -108,7 +118,7 @@ export class AuthService {
       data: { isEnabled: true, verificationToken: '' },
     });
 
-    return this.login(user);
+    return this.login(user) as Promise<JWT>;
   }
 
   async resetPassword(

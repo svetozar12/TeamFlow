@@ -8,6 +8,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TokenCleanupService } from '@apps/TeamFlowApi/src/app/services/tokenCleanup/tokenCleanup.service';
 import { PrismaService } from '@apps/TeamFlowApi/src/app/prisma/prisma.service';
 import { MailModule } from '@apps/TeamFlowApi/src/app/services/mail/mail.module';
+import { TwoFAModule } from '@apps/TeamFlowApi/src/app/services/twoFA/twoFA.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { MailModule } from '@apps/TeamFlowApi/src/app/services/mail/mail.module'
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
     AuthModule,
+    TwoFAModule,
     RedisModule.forRoot(),
   ],
   providers: [TokenCleanupService, PrismaService],

@@ -9,16 +9,26 @@ type JWT {
   refreshToken: String!
 }
 
+type TwoFAJWT {
+  twoFAToken:String!
+}
+
 type Message {
   data: String
 }
 
+type TwoFA {
+  otpauth: String!
+}
+
 # Union to return either a SetList or an InternalServerError
-union LoginResult = JWT | InternalServerError
+union LoginResult = JWT | TwoFAJWT | InternalServerError
 
 union ProfileResponse = Profile | InternalServerError
 
 union MessageResponse = Message | InternalServerError
+
+union Enable2FAResponse = TwoFA | InternalServerError
 
 # Types
 
@@ -27,6 +37,8 @@ type User {
   email: String!
   password: String!
   accountType: String!
+  isTwoFaEnabled: Boolean!
+  isEnabled: Boolean!
 }
 
 type Profile {
@@ -67,12 +79,28 @@ input ResetPasswordInput {
   ID: String!
 }
 
+input ConfirmTwoFAInput {
+  code: String!
+}
+
+input VerifyTwoFAInput {
+  code: String!
+  tempToken: String!
+}
+
 # Mutation to add a new set and log in a user
 type Mutation {
+  # auth
   login(input: LoginInput!): LoginResult
   register(input:LoginInputLocal!): MessageResponse
   verifyEmail(input: VerifyEmailInput!):JWT
+  # user operations
   deleteProfile: ProfileResponse
   requestResetPassword(input: RequestResetPasswordInput!): MessageResponse
   resetPassword(input: ResetPasswordInput!): MessageResponse
+  # 2FA
+  enable2FA:Enable2FAResponse
+  confirm2FA(input:ConfirmTwoFAInput!):MessageResponse
+  verify2FA(input:VerifyTwoFAInput!):MessageResponse
+
 }
