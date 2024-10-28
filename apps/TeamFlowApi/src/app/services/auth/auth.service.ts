@@ -82,6 +82,7 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, this.SALT);
     const verificationToken = crypto.randomUUID();
+
     await this.prismaService.user.create({
       data: {
         email,
@@ -89,6 +90,7 @@ export class AuthService {
         password: hashedPassword,
         isEnabled: false,
         verificationToken,
+        roles: { connect: { name: 'Team Member' } },
       },
     });
     // Send email

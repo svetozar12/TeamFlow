@@ -13,7 +13,7 @@ model User {
   password               String
   accountType            AccountType           @default(Local)
   token                  WhiteList[]
-  passwordChangeRequests PasswordChangeRequest[]
+  passwordChangeRequest PasswordChangeRequest?
   isEnabled              Boolean
   verificationToken      String?
   isTwoFaEnabled         Boolean               @default(false)
@@ -51,7 +51,7 @@ model PasswordChangeRequest {
   id     Int    @default(autoincrement()) @id
   ID     String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int
+  userId Int    @unique
 }
 
 enum AccountType {
@@ -69,8 +69,3 @@ enum PermissionFeatureType {
   CommunicationChannels
 }
 
-enum PermissionType {
-  Full
-  OwnProjects
-  No
-}
