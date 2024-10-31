@@ -83,6 +83,10 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(password, this.SALT);
     const verificationToken = crypto.randomUUID();
 
+    const teamMemberRole = await this.prismaService.role.findFirst({
+      where: { name: 'Team Member' },
+    });
+
     await this.prismaService.user.create({
       data: {
         email,
@@ -90,7 +94,7 @@ export class AuthService {
         password: hashedPassword,
         isEnabled: false,
         verificationToken,
-        roles: { connect: { name: 'Team Member' } },
+        roles: { connect: { id: teamMemberRole.id } },
       },
     });
     // Send email
