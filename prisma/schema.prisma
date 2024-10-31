@@ -8,32 +8,80 @@ generator client {
 }
 
 model User {
-  id    Int     @default(autoincrement()) @id
-  email String @unique
-  password String
-  accountType AccountType @default(Local)
-  token WhiteList[]
+  id                    Int                    @id @default(autoincrement())
+  email                 String                 @unique
+  password              String
+  accountType           AccountType            @default(Local)
+  token                 WhiteList[]
   passwordChangeRequest PasswordChangeRequest?
-  isEnabled Boolean
-  verificationToken String
-  isTwoFaEnabled Boolean @default(false)
-  twoFaSecret String?
-  hashedBackupCodes String[]
+  isEnabled             Boolean
+  verificationToken     String?
+  isTwoFaEnabled        Boolean                @default(false)
+  twoFaSecret           String?
+  hashedBackupCodes     String[]
+  roles                 ProjectUserRole[]
+  projects              Project[]
+}
+
+model Role {
+  id      Int               @id @default(autoincrement())
+  name    String            @unique
+  actions Action[]          @relation("RoleActions")
+  roles   ProjectUserRole[]
+}
+
+model Action {
+  id        Int         @id @default(autoincrement())
+  module    Modules
+  ownership Ownership?
+  action    ActionsEnum
+  roles     Role[]      @relation("RoleActions") // Many-to-many relationship with Role
+}
+
+model Ownership {
+  id                 Int     @id @default(autoincrement())
+  UserManagement     Boolean @default(false)
+  ProjectManagement  Boolean @default(false)
+  TaskManagement     Boolean @default(false)
+  MessagesManagement Boolean @default(false)
+
+  action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  actionId Int    @unique
 }
 
 model WhiteList {
-  id Int @default(autoincrement()) @id
-  token String @unique
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
   expiresAt DateTime
 }
 
 model PasswordChangeRequest {
-  id Int @default(autoincrement()) @id
-  ID String @unique
-  user   User @relation(fields: [userId], references: [id])
-  userId Int @unique
+  id     Int    @id @default(autoincrement())
+  ID     String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int    @unique
+}
+
+model Project {
+  id      Int               @id @default(autoincrement())
+  name    String
+  users   ProjectUserRole[]
+  owner   User              @relation(fields: [ownerId], references: [id])
+  ownerId Int               @unique
+}
+
+model ProjectUserRole {
+  id        Int     @id @default(autoincrement())
+  user      User    @relation(fields: [userId], references: [id])
+  userId    Int
+  project   Project @relation(fields: [projectId], references: [id])
+  projectId Int
+  role      Role    @relation(fields: [roleId], references: [id])
+  roleId    Int
+
+  @@unique([userId, projectId]) // Ensures each user has only one role per project
 }
 
 enum AccountType {
@@ -42,3 +90,41 @@ enum AccountType {
   Github
 }
 
+enum Modules {
+  UserManagement
+  ProjectManagement
+  TaskManagement
+  MessagesManagement
+}
+
+enum ActionsEnum {
+  // UserManagement
+  CreateUser
+  ReadUserProfiles
+  UpdateUser
+  DeleteUser
+  ManageUserRoles
+  EditOwnProfile
+  // ProjectManagement
+  CreateProject
+  ReadProject
+  UpdateProject
+  DeleteProject
+  AssignMemberToProject
+  // TaskManagement
+  CreateTask
+  ReadTask
+  UpdateTask
+  DeleteTask
+  AssignTask
+  ChangeTaskStatus
+  CommentOnTask
+  // MessagesManagement
+  CreateChannel
+  ManageChannel
+  ReadChannel
+  SendMessage
+  ReadMessage
+  DeleteMessage
+  DirectMessage
+}
