@@ -1,0 +1,9 @@
+import { User } from "user"
+
+model WhiteList {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  expiresAt DateTime
+}

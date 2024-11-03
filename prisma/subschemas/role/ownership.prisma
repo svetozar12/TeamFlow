@@ -1,0 +1,12 @@
+import { Action } from "action"
+
+model Ownership {
+  id                 Int     @id @default(autoincrement())
+  UserManagement     Boolean @default(false)
+  ProjectManagement  Boolean @default(false)
+  TaskManagement     Boolean @default(false)
+  MessagesManagement Boolean @default(false)
+
+  action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  actionId Int    @unique
+}

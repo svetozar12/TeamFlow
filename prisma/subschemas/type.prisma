@@ -1,0 +1,44 @@
+enum AccountType {
+ Local
+ Github
+ Google
+}
+
+enum Modules {
+ UserManagement
+ ProjectManagement
+ TaskManagement
+ MessagesManagement
+}
+
+enum ActionsEnum {
+  UserManagement
+ CreateUser
+ ReadUserProfiles
+ UpdateUser
+ DeleteUser
+ ManageUserRoles
+ EditOwnProfile
+ ProjectManagement
+ CreateProject
+ ReadProject
+ UpdateProject
+ DeleteProject
+ AssignMemberToProject
+ TaskManagement
+ CreateTask
+ ReadTask
+ UpdateTask
+ DeleteTask
+ AssignTask
+ ChangeTaskStatus
+ CommentOnTask
+ MessagesManagement
+ CreateChannel
+ ManageChannel
+ ReadChannel
+ SendMessage
+ ReadMessage
+ DeleteMessage
+ DirectMessage
+}

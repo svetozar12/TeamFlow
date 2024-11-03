@@ -1,67 +1,12 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+//🧩Don't Edit this file.✨Generated in Sun Nov 03 2024 12:47:48 GMT+0200 (Eastern European Standard Time)✨
 
 generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id                    Int                    @id @default(autoincrement())
-  email                 String                 @unique
-  password              String
-  accountType           AccountType            @default(Local)
-  token                 WhiteList[]
-  passwordChangeRequest PasswordChangeRequest?
-  isEnabled             Boolean
-  verificationToken     String?
-  isTwoFaEnabled        Boolean                @default(false)
-  twoFaSecret           String?
-  hashedBackupCodes     String[]
-  roles                 ProjectUserRole[]
-  projects              Project[]
-}
-
-model Role {
-  id      Int               @id @default(autoincrement())
-  name    String            @unique
-  actions Action[]          @relation("RoleActions")
-  roles   ProjectUserRole[]
-}
-
-model Action {
-  id        Int         @id @default(autoincrement())
-  module    Modules
-  ownership Ownership?
-  action    ActionsEnum
-  roles     Role[]      @relation("RoleActions") // Many-to-many relationship with Role
-}
-
-model Ownership {
-  id                 Int     @id @default(autoincrement())
-  UserManagement     Boolean @default(false)
-  ProjectManagement  Boolean @default(false)
-  TaskManagement     Boolean @default(false)
-  MessagesManagement Boolean @default(false)
-
-  action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
-  actionId Int    @unique
-}
-
-model WhiteList {
-  id        Int      @id @default(autoincrement())
-  token     String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    Int
-  expiresAt DateTime
-}
-
-model PasswordChangeRequest {
-  id     Int    @id @default(autoincrement())
-  ID     String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int    @unique
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Project {
@@ -84,10 +29,36 @@ model ProjectUserRole {
   @@unique([userId, projectId]) // Ensures each user has only one role per project
 }
 
+model Action {
+  id        Int         @id @default(autoincrement())
+  module    Modules
+  ownership Ownership?
+  action    ActionsEnum
+  roles     Role[]      @relation("RoleActions") // Many-to-many relationship with Role
+}
+
+model Ownership {
+  id                 Int     @id @default(autoincrement())
+  UserManagement     Boolean @default(false)
+  ProjectManagement  Boolean @default(false)
+  TaskManagement     Boolean @default(false)
+  MessagesManagement Boolean @default(false)
+
+  action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  actionId Int    @unique
+}
+
+model Role {
+  id      Int               @id @default(autoincrement())
+  name    String            @unique
+  actions Action[]          @relation("RoleActions")
+  roles   ProjectUserRole[]
+}
+
 enum AccountType {
   Local
-  Google
   Github
+  Google
 }
 
 enum Modules {
@@ -98,20 +69,20 @@ enum Modules {
 }
 
 enum ActionsEnum {
-  // UserManagement
+  UserManagement
   CreateUser
   ReadUserProfiles
   UpdateUser
   DeleteUser
   ManageUserRoles
   EditOwnProfile
-  // ProjectManagement
+  ProjectManagement
   CreateProject
   ReadProject
   UpdateProject
   DeleteProject
   AssignMemberToProject
-  // TaskManagement
+  TaskManagement
   CreateTask
   ReadTask
   UpdateTask
@@ -119,7 +90,7 @@ enum ActionsEnum {
   AssignTask
   ChangeTaskStatus
   CommentOnTask
-  // MessagesManagement
+  MessagesManagement
   CreateChannel
   ManageChannel
   ReadChannel
@@ -127,4 +98,35 @@ enum ActionsEnum {
   ReadMessage
   DeleteMessage
   DirectMessage
+}
+
+model PasswordChangeRequest {
+  id     Int    @id @default(autoincrement())
+  ID     String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int    @unique
+}
+
+model User {
+  id                    Int                    @id @default(autoincrement())
+  email                 String                 @unique
+  password              String
+  accountType           AccountType            @default(Local)
+  token                 WhiteList[]
+  passwordChangeRequest PasswordChangeRequest?
+  isEnabled             Boolean
+  verificationToken     String?
+  isTwoFaEnabled        Boolean                @default(false)
+  twoFaSecret           String?
+  hashedBackupCodes     String[]
+  roles                 ProjectUserRole[]
+  projects              Project[]
+}
+
+model WhiteList {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  expiresAt DateTime
 }

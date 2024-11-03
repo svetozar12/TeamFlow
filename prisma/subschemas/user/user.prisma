@@ -1,0 +1,21 @@
+import { WhiteList } from "whitelist"
+import { PasswordChangeRequest } from "passwordResetRequest"
+import { Project, ProjectUserRole } from "..\project\project"
+import { PasswordChangeRequest } from "passwordResetRequest"
+import { AccountType } from "..\type"
+
+model User {
+  id                    Int                    @id @default(autoincrement())
+  email                 String                 @unique
+  password              String
+  accountType           AccountType            @default(Local)
+  token                 WhiteList[]
+  passwordChangeRequest PasswordChangeRequest?
+  isEnabled             Boolean
+  verificationToken     String?
+  isTwoFaEnabled        Boolean                @default(false)
+  twoFaSecret           String?
+  hashedBackupCodes     String[]
+  roles                 ProjectUserRole[]
+  projects              Project[]
+}

@@ -12530,6 +12530,11 @@ pretty-format@^29.0.0, pretty-format@^29.7.0:
     ansi-styles "^5.0.0"
     react-is "^18.0.0"
 
+prisma-multischema@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/prisma-multischema/-/prisma-multischema-1.1.4.tgz#cfb6a48b550045629a21be0c9a1d069a5c61cd02"
+  integrity sha512-38tQy7T8yIfdGNAOjhLuP/ZrmdWaPaYXPE1au7rLHDm5h5GFHFAtouVD2ihsSnXT0L1VSWd/yxNUOlsvKOcFZQ==
+
 prisma@^5.21.0:
   version "5.21.0"
   resolved "https://registry.yarnpkg.com/prisma/-/prisma-5.21.0.tgz#4f3d070e873f8f2a584eb060b27a9ffa815b03b7"

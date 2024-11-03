@@ -1,0 +1,11 @@
+import { Ownership } from "ownership"
+import { Role } from "role"
+import { ActionsEnum, Modules } from "..\type"
+
+model Action {
+  id        Int         @id @default(autoincrement())
+  module    Modules
+  ownership Ownership?
+  action    ActionsEnum
+  roles     Role[]      @relation("RoleActions") // Many-to-many relationship with Role
+}
