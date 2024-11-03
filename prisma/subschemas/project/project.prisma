@@ -4,7 +4,7 @@ import { Role } from "..\role\role"
 model Project {
   id      Int               @id @default(autoincrement())
   name    String
-  users   ProjectUserRole[]
+  members   ProjectUserRole[]
   owner   User              @relation(fields: [ownerId], references: [id])
   ownerId Int               @unique
 }

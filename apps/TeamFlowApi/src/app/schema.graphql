@@ -31,7 +31,7 @@ type ConfirmTwoFA {
 
 union AuthResult = JWT | TwoFAJWT | InternalServerError
 union Response = Message | InternalServerError
-union ProfileResponse = Profile | InternalServerError
+union ProfileResponse = User | InternalServerError
 union TwoFAResponse = TwoFA | InternalServerError
 union ConfirmTwoFAResponse = ConfirmTwoFA | InternalServerError
 
@@ -43,12 +43,13 @@ type User {
   accountType: String!
   isTwoFaEnabled: Boolean!
   isEnabled: Boolean!
+  projects: [Project]!
 }
 
-type Profile {
-  id: Int!
-  email: String!
-  accountType: String!
+type Project {
+  name: String!
+  owner: User!
+  members: [User]!
 }
 
 # Input Types
@@ -112,4 +113,3 @@ type Mutation {
   confirmTwoFA(input: ConfirmTwoFAInput!): ConfirmTwoFAResponse!
   verifyTwoFA(input: VerifyTwoFAInput!): AuthResult!
 }
-
